@@ -1,0 +1,81 @@
+#include <iostream>
+#include <stdexcept>
+#include <cassert>
+
+double calculateY(int x, int n) {
+    double y = 1; 
+
+    if (x <= 0) {
+        for (int i = 1; i <= n; i++)
+            y *= (i + x); 
+    }
+    else {
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++)
+                y += (x + i) / (i + j + 1);
+        }
+    }
+
+    return y;
+}
+
+int inputWithValidation(const std::string& prompt, int minValue) {
+    int value;
+    std::cout << prompt;
+    std::cin >> value;
+
+    if (std::cin.fail() || value < minValue) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        throw std::invalid_argument("Ошибка: введено некорректное значение.");
+    }
+
+    return value;
+}
+
+void printResult(int x, double y) {
+    std::cout << "Результат: x = " << x << "; y = " << y << std::endl;
+}
+
+// Ваш код с изменениями
+void testCalculateY() {
+    // Предположенные результаты для x <= 0
+    assert(calculateY(-1, 3) == -6); // Изменено на -6 для умножения
+    assert(calculateY(0, 5) == 0);   // Изменено на 0 для умножения
+
+    // Предположенные результаты для x > 0
+    assert(calculateY(1, 2) == 2);      // Изменено на 2 для умножения
+    assert(calculateY(2, 3) == 36);     // Изменено на 36 для умножения
+}
+
+void testInputWithValidation() {
+    // Тестирование ввода корректных значений
+    assert(inputWithValidation("Test prompt: ", 0) == 1);
+
+    // Тестирование ввода некорректных значений
+    try {
+        inputWithValidation("Test prompt: ", 5);
+        // Если не выброшено исключение, тест не пройден
+        assert(false);
+    }
+    catch (const std::invalid_argument& e) {
+        // Если выброшено исключение, тест пройден
+        assert(true);
+    }
+}
+
+int main() {
+    // Запуск тестов
+    testCalculateY();
+    testInputWithValidation();
+
+    // Пример использования функций
+    int n = inputWithValidation("Введите n >= 4, n=", 4);
+    int x = inputWithValidation("Введите x= ", 0);
+    double y = calculateY(x, n);
+    printResult(x, y);
+
+    std::cout << "Тестирование завершено успешно." << std::endl;
+
+    return 0;
+}
